@@ -1,0 +1,20 @@
+<html>
+    <head>
+    </head>
+    <body>
+    <form method="post" action="/unit3/myBlog/newpost">
+        <label>Subject:<BR>
+            <input type="text" name="subject" value="{{subject}}"
+                   style="width:720">
+        </label>
+        <BR><BR>
+        <label>Contents:<BR>
+            <textarea name="content" cols="100" rows="20">{{content}}
+            </textarea>
+        </label>
+        <div style="color:red">{{err_input}}</div>
+        <BR>
+        <input type="submit" value="Submit">
+    </form>
+    </body>
+</html>
