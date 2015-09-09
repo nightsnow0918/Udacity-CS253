@@ -19,11 +19,16 @@ import os
 
 import jinja2
 import webapp2
+from google.appengine.ext import db
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
 
+class Article(db.Model):
+    index   = db.IntegerProperty(required = True)
+    subject = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
 
 class Handler(webapp2.RequestHandler):
 
@@ -39,6 +44,8 @@ class Handler(webapp2.RequestHandler):
 
 class NewPostHandler(Handler):
 
+    total_articles = 0
+
     def valid_input(self, subject, content):
         return subject and content
 
@@ -48,19 +55,22 @@ class NewPostHandler(Handler):
     def post(self):
         subject = self.request.get("subject")
         content = self.request.get("content")
-        app = webapp2.WSGIApplication(debug=True)
-        app.router.add(('/unit3/myBlog/tmp','tmpHandler'))
+
         if not self.valid_input(subject, content):
             self.render("myBlog.html", subject=subject,
                                        content=content,
                                        err_input="Required subject and contents!")
         else:
-            self.redirect("/unit3/myBlog/tmp?subject="+subject)
+            total_articles = db.GqlQuery("Select * from Article").count()
+            new_article = Article(subject = subject, content = content, index = total_articles+1)
+            new_article.put()
+            self.write(total_articles)
+            #self.redirect("/unit3/myBlog/"+str(total_articles+1)) #"1111" will be replaced by article index
 
-class tmpHandler(Handler):
-    def get(self):
-        subject = self.request.get("subject")
-        self.write(subject)
+class PostHandler(Handler):
+    def get(self, post_id):
+        self.write(post_id)
+        # self.render("article.html")
 
 class MyBlogMainHandler(Handler):
     def get(self):
