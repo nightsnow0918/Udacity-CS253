@@ -69,11 +69,13 @@ class NewPostHandler(Handler):
             self.redirect("/unit3/myBlog/"+str(total_articles+1)) #"1111" will be replaced by article index
 
 class PostHandler(Handler):
+    
     def get(self, post_id):
-        article = db.GqlQuery("Select * from Article where index="+post_id)
-        subject = article.get().subject
-        content = article.get().content
-        self.render("article.html", subject=subject, content=content)
+        article = None
+        # data may not have been stored into database, keep querying until get the result
+        while not article: 
+            article = db.GqlQuery("Select * from Article where index="+post_id).get()
+        self.render("article.html", subject=article.subject, content=article.content)
 
 class MyBlogMainHandler(Handler):
     def get(self):
