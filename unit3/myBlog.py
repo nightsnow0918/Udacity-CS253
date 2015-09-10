@@ -26,9 +26,9 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
 
 class Article(db.Model):
-    index   = db.IntegerProperty(required = True)
-    subject = db.StringProperty(required = True)
-    content = db.TextProperty(required = True)
+    index   = db.IntegerProperty(required=True)
+    subject = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
 
 class Handler(webapp2.RequestHandler):
 
@@ -62,15 +62,18 @@ class NewPostHandler(Handler):
                                        err_input="Required subject and contents!")
         else:
             total_articles = db.GqlQuery("Select * from Article").count()
-            new_article = Article(subject = subject, content = content, index = total_articles+1)
+            new_article = Article(subject=subject, content=content, 
+                                  index=total_articles+1)
             new_article.put()
-            self.write(total_articles)
-            #self.redirect("/unit3/myBlog/"+str(total_articles+1)) #"1111" will be replaced by article index
+            
+            self.redirect("/unit3/myBlog/"+str(total_articles+1)) #"1111" will be replaced by article index
 
 class PostHandler(Handler):
     def get(self, post_id):
-        self.write(post_id)
-        # self.render("article.html")
+        article = db.GqlQuery("Select * from Article where index="+post_id)
+        subject = article.get().subject
+        content = article.get().content
+        self.render("article.html", subject=subject, content=content)
 
 class MyBlogMainHandler(Handler):
     def get(self):
