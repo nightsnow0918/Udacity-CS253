@@ -1,20 +1,16 @@
+<!DOCTYPE html>
+
 <html>
     <head>
+        <title>Snow's Blog</title>
     </head>
     <body>
-    <form method="post" action="/unit3/myBlog/newpost">
-        <label>Subject:<BR>
-            <input type="text" name="subject" value="{{subject}}"
-                   style="width:720">
-        </label>
-        <BR><BR>
-        <label>Contents:<BR>
-            <textarea name="content" cols="100" rows="20">{{content}}
-            </textarea>
-        </label>
-        <div style="color:red">{{err_input}}</div>
-        <BR>
-        <input type="submit" value="Submit">
-    </form>
+    <h1>Snow's Blog</h1>
+    <a href="/unit3/myBlog/newpost">New Post</a>
+    {% for article in articles %}
+        <div class="article-subject"><h3>{{article.subject}}</h3></div>
+        <pre class="article-content">{{article.content}}</pre>
+        <HR align="left" width="30%">
+    {% endfor %}
     </body>
 </html>

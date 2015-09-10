@@ -50,23 +50,23 @@ class NewPostHandler(Handler):
         return subject and content
 
     def get(self):
-        self.render("myBlog.html")
+        self.render("newpost.html")
 
     def post(self):
         subject = self.request.get("subject")
         content = self.request.get("content")
 
         if not self.valid_input(subject, content):
-            self.render("myBlog.html", subject=subject,
-                                       content=content,
-                                       err_input="Required subject and contents!")
+            self.render("newpost.html", subject=subject,
+                                        content=content,
+                                        err_input="Required subject and contents!")
         else:
             total_articles = db.GqlQuery("Select * from Article").count()
             new_article = Article(subject=subject, content=content, 
                                   index=total_articles+1)
             new_article.put()
             
-            self.redirect("/unit3/myBlog/"+str(total_articles+1)) #"1111" will be replaced by article index
+            self.redirect("/unit3/myBlog/"+str(total_articles+1))
 
 class PostHandler(Handler):
     
@@ -79,9 +79,8 @@ class PostHandler(Handler):
 
 class MyBlogMainHandler(Handler):
     def get(self):
-        pass
-
-    def post(self):
+        articles = db.GqlQuery("Select * from Article ORDER BY index DESC")
+        self.render("myBlog.html", articles=articles)
         pass
 
 
