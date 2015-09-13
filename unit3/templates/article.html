@@ -1,15 +1,11 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-    <head>
-    </head>
-    <body>
-        <div class="article">
-            <div class="article-subject"><h1>{{subject}}</h1></div>
-            <pre class="article-content">{{content}}</pre>
-            <HR align="left" width="30%">
-        </div> 
-        <a href="/unit3/myBlog/newpost">Another New Post</a>
-        <a href="/unit3/myBlog"        >Back to Main Page</a>
-    </body>
-</html>
+{% block body %}
+    <div class="article">
+        <div class="article-subject"><h1>{{subject}}</h1></div>
+        <pre class="article-content">{{content}}</pre>
+        <HR align="left" width="30%">
+    </div> 
+    <a href="/unit3/myblog/newpost">Another New Post</a>
+    <a href="/unit3/myblog"        >Back to Main Page</a>
+{% endblock %}

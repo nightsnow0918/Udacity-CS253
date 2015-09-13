@@ -1,16 +1,15 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-    <head>
-        <title>Snow's Blog</title>
-    </head>
-    <body>
+{% block title %}
+    Snow's Blog
+{% endblock %}
+
+{% block body %}
     <h1>Snow's Blog</h1>
-    <a href="/unit3/myBlog/newpost">New Post</a>
+    <a href="/unit3/myblog/newpost">New Post</a>
     {% for article in articles %}
         <div class="article-subject"><h3>{{article.subject}}</h3></div>
         <pre class="article-content">{{article.content}}</pre>
         <HR align="left" width="30%">
     {% endfor %}
-    </body>
-</html>
+{% endblock %}

@@ -1,8 +1,7 @@
-<html>
-    <head>
-    </head>
-    <body>
-    <form method="post" action="/unit3/myBlog/newpost">
+{% extends "base.html" %}
+
+{% block body %}
+    <form method="post" action="/unit3/myblog/newpost">
         <label>Subject:<BR>
             <input type="text" name="subject" value="{{subject}}"
                    style="width:720">
@@ -16,6 +15,5 @@
         <BR>
         <input type="submit" value="Submit">
     </form>
-    <a href="/unit3/myBlog">Back to Main Page</a>
-    </body>
-</html>
+    <a href="/unit3/myblog">Back to Main Page</a>
+{% endblock %}
