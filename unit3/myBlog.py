@@ -104,37 +104,32 @@ def valid_password(password):
 def valid_email(email):
     return EMAIL_RE.match(email)
 
-class ErrorFormMsg():
-    
-    def __init__(self, err_user, err_passwd, err_vrfy_passwd, err_email):
-        self.err_user        = err_user
-        self.err_passwd      = err_passwd
-        self.err_vrfy_passwd = err_vrfy_passwd
-        self.err_email       = err_email
-
 class SignUpHandler(Handler):
 
-    def valid_input(self):
+    def valid_input(self, username, password, vry_password, email):
         err = False
-        if not self.username or not valid_username(self.username):
-            self.err_msg.err_user = "Invalid user name"
+
+        if not username or not valid_username(username):
+            self.param["err_username"] = "Invalid user name"
             err = True
         else:
-            self.username = username
+            self.param["username"] = username
 
-        if not self.password or not valid_password(self.password):
-            self.err_passwd = "Invalid pass word"
+        if not password or not valid_password(password):
+            self.param["err_password"] = "Invalid password"
             err = True
 
-        if self.passwd != self.vrfy_passwd:
-            self.err_vrfy_passwd = "The password didn't match"
-            self.passwd = ""
-            self.vrfy_passwd = ""
+        if password != vry_password:
+            self.param["err_vry_password"] = "The password didn't match"
+            self.param["password"]         = ""
+            self.param["vry_password"]     = ""
             err = True
 
-        if self.email and not valid_email(self.email):
-            self.err_email = "The email address" 
+        if email and not valid_email(email):
+            self.param["err_email"] = "The email address" 
             err = True
+        else:
+            self.param["email"] = email
 
         return err
     
@@ -144,17 +139,19 @@ class SignUpHandler(Handler):
 
 
     def post(self):
-        self.username     = self.request.get('username')
-        self.password     = self.request.get('password')
-        self.vry_password = self.request.get('vry_password')
-        self.email        = self.request.get('email')
+        username     = self.request.get('username')
+        password     = self.request.get('password')
+        vry_password = self.request.get('vry_password')
+        email        = self.request.get('email')
 
-        self.err_msg = ErrorFormMsg(err_user="", err_passwd="",
-                                    err_vrfy_passwd="", err_email="")
-        if self.valid_input(self):
-            pass
+        self.param   = dict(username=username, email=email)
+
+        if self.valid_input(self, username, password, vry_password, email):
+            # redirect to welcome page with user name
+            # Set cookie and store user info to database
+            pass 
         else:
-            pass
+            self.render("signup.html", self.param)
 
 
 
