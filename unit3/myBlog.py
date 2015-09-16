@@ -87,7 +87,6 @@ class MyBlogMainHandler(Handler):
     def get(self):
         articles = db.GqlQuery("Select * from Article ORDER BY index DESC")
         self.render("myBlog.html", articles=articles)
-        pass
 
 
 ################### Sign-Up Handling ####################
@@ -131,7 +130,7 @@ class SignUpHandler(Handler):
         else:
             self.param["email"] = email
 
-        return err
+        return not err
     
     
     def get(self):
@@ -146,12 +145,22 @@ class SignUpHandler(Handler):
 
         self.param   = dict(username=username, email=email)
 
-        if self.valid_input(self, username, password, vry_password, email):
-            # redirect to welcome page with user name
-            # Set cookie and store user info to database
+        if self.valid_input(username, password, vry_password, email):
+            self.response.set_cookie('username', username, path='/')
+            self.redirect('/unit3/myblog/welcome')
             pass 
         else:
-            self.render("signup.html", self.param)
+            self.render('signup.html', **self.param)
 
+
+class WelcomeHandler(Handler):
+
+    def get(self):
+        username = self.request.cookies.get('username')
+        self.render('welcome.html', username=username)
+        pass
+
+    def post(self):
+        pass
 
 
