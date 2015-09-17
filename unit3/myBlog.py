@@ -105,7 +105,7 @@ def valid_email(email):
 
 class SignUpHandler(Handler):
 
-    def valid_input(self, username, password, vry_password, email):
+    def valid_input(self, username, password, verify, email):
         err = False
 
         if not username or not valid_username(username):
@@ -118,10 +118,10 @@ class SignUpHandler(Handler):
             self.param["err_password"] = "Invalid password"
             err = True
 
-        if password != vry_password:
+        if password != verify:
             self.param["err_vry_password"] = "The password didn't match"
             self.param["password"]         = ""
-            self.param["vry_password"]     = ""
+            self.param["verify"]           = ""
             err = True
 
         if email and not valid_email(email):
@@ -138,14 +138,14 @@ class SignUpHandler(Handler):
 
 
     def post(self):
-        username     = self.request.get('username')
-        password     = self.request.get('password')
-        vry_password = self.request.get('vry_password')
-        email        = self.request.get('email')
+        username   = self.request.get('username')
+        password   = self.request.get('password')
+        verify     = self.request.get('verify')
+        email      = self.request.get('email')
 
-        self.param   = dict(username=username, email=email)
+        self.param = dict(username=username, email=email)
 
-        if self.valid_input(username, password, vry_password, email):
+        if self.valid_input(username, password, verify, email):
             self.response.set_cookie('username', username, path='/')
             self.redirect('/unit3/myblog/welcome')
             pass 
