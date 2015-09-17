@@ -18,8 +18,9 @@
 import os
 import re
 
-import jinja2
-import webapp2
+import jinja2, webapp2
+
+from lib import webhash
 from google.appengine.ext import db
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
@@ -106,31 +107,31 @@ def valid_email(email):
 class SignUpHandler(Handler):
 
     def valid_input(self, username, password, verify, email):
-        err = False
+        valid = True
 
         if not username or not valid_username(username):
             self.param["err_username"] = "Invalid user name"
-            err = True
+            valid = False
         else:
             self.param["username"] = username
 
         if not password or not valid_password(password):
             self.param["err_password"] = "Invalid password"
-            err = True
+            valid = False
 
         if password != verify:
             self.param["err_vry_password"] = "The password didn't match"
             self.param["password"]         = ""
             self.param["verify"]           = ""
-            err = True
+            valid = False
 
         if email and not valid_email(email):
             self.param["err_email"] = "The email address" 
-            err = True
+            valid = False
         else:
             self.param["email"] = email
 
-        return not err
+        return valid
     
     
     def get(self):
@@ -146,9 +147,9 @@ class SignUpHandler(Handler):
         self.param = dict(username=username, email=email)
 
         if self.valid_input(username, password, verify, email):
+            #username = webhash.gen_hash_string(username, password)
             self.response.set_cookie('username', username, path='/')
             self.redirect('/unit3/myblog/welcome')
-            pass 
         else:
             self.render('signup.html', **self.param)
 
@@ -158,7 +159,6 @@ class WelcomeHandler(Handler):
     def get(self):
         username = self.request.cookies.get('username')
         self.render('welcome.html', username=username)
-        pass
 
     def post(self):
         pass
