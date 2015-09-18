@@ -33,6 +33,11 @@ class Article(db.Model):
     content = db.TextProperty(required=True)
 
 
+class UserProfile(db.Model):
+    name    = db.StringProperty(required=True)
+    password= db.StringProperty(required=True)
+
+
 class Handler(webapp2.RequestHandler):
 
     def write(self, *a, **kw):
@@ -147,8 +152,15 @@ class SignUpHandler(Handler):
         self.param = dict(username=username, email=email)
 
         if self.valid_input(username, password, verify, email):
-            #username = webhash.gen_hash_string(username, password)
-            self.response.set_cookie('username', username, path='/')
+            # Set Cookie
+            hash_user = webhash.gen_hash_string(username, password, salt="")
+            self.response.set_cookie('user_id', hash_user, path='/')
+
+            # Store User info
+            new_user = UserProfile(name=hash_user, password=password)
+            new_user.put()
+
+            # Redirect to welcome page
             self.redirect('/unit3/myblog/welcome')
         else:
             self.render('signup.html', **self.param)
@@ -157,8 +169,9 @@ class SignUpHandler(Handler):
 class WelcomeHandler(Handler):
 
     def get(self):
-        username = self.request.cookies.get('username')
-        self.render('welcome.html', username=username)
+        user = UserProfile().gql("WHERE name="+)
+        hash_user = self.request.cookies.get('user_id')
+        self.render('welcome.html', username=hash_user)
 
     def post(self):
         pass
