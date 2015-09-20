@@ -17,6 +17,7 @@
 
 import os
 import re
+import time
 
 import jinja2, webapp2
 
@@ -31,11 +32,6 @@ class Article(db.Model):
     index   = db.IntegerProperty(required=True)
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-
-
-class UserProfile(db.Model):
-    name    = db.StringProperty(required=True)
-    password= db.StringProperty(required=True)
 
 
 class Handler(webapp2.RequestHandler):
@@ -100,6 +96,11 @@ USER_RE     = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 PASSWD_RE   = re.compile("^.{3,20}$")
 EMAIL_RE    = re.compile("^[\S]+@[\S]+\.[\S]+$")
 
+class UserProfile(db.Model):
+    name    = db.StringProperty(required=True)
+    password= db.StringProperty()
+
+
 def valid_username(name):
     return USER_RE.match(name)
 
@@ -116,6 +117,9 @@ class SignUpHandler(Handler):
 
         if not username or not valid_username(username):
             self.param["err_username"] = "Invalid user name"
+            valid = False
+        elif self.chk_user_exist(username):
+            self.param["err_username"] = "Username already exists"
             valid = False
         else:
             self.param["username"] = username
@@ -138,7 +142,9 @@ class SignUpHandler(Handler):
 
         return valid
     
-    
+    def chk_user_exist(self, user):
+        return UserProfile.gql("WHERE name=:1", user).get()
+
     def get(self):
         self.render('signup.html')
 
@@ -152,15 +158,16 @@ class SignUpHandler(Handler):
         self.param = dict(username=username, email=email)
 
         if self.valid_input(username, password, verify, email):
-            # Set Cookie
-            hash_user = webhash.gen_hash_string(username, password, salt="")
-            self.response.set_cookie('user_id', hash_user, path='/')
-
-            # Store User info
-            new_user = UserProfile(name=hash_user, password=password)
+            # Store username/password into database
+            hash_pw = webhash.gen_pw_hash(username, password, salt='')
+            new_user = UserProfile(name=username, password=password)
             new_user.put()
 
+            # Set Cookie
+            self.response.set_cookie('name', value=hash_pw, path='/')
+            
             # Redirect to welcome page
+            time.sleep(1)
             self.redirect('/unit3/myblog/welcome')
         else:
             self.render('signup.html', **self.param)
@@ -169,9 +176,18 @@ class SignUpHandler(Handler):
 class WelcomeHandler(Handler):
 
     def get(self):
-        user = UserProfile().gql("WHERE name="+)
-        hash_user = self.request.cookies.get('user_id')
-        self.render('welcome.html', username=hash_user)
+        self.param = {}
+        hash_str = self.request.cookies.get('name')
+
+        user_list = UserProfile.all()
+
+        for user in user_list:
+            if webhash.valid_pw(user.name, user.password, hash_str):
+                self.param['username'] = user.name
+                self.render('welcome.html', **self.param)
+                break
+        else:
+            self.redirect('/unit3/myblog/signup')
 
     def post(self):
         pass
