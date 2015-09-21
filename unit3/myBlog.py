@@ -47,7 +47,7 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_str(template, **kw))
 
 
-class NewPostHandler(Handler):
+class NewPostPage(Handler):
 
     total_articles = 0
 
@@ -74,7 +74,7 @@ class NewPostHandler(Handler):
             self.redirect("/unit3/myblog/"+str(total_articles+1))
 
 
-class PostHandler(Handler):
+class Permalinks(Handler):
     
     def get(self, post_id):
         article = None
@@ -84,7 +84,7 @@ class PostHandler(Handler):
         self.render("article.html", subject=article.subject, content=article.content)
 
 
-class MyBlogMainHandler(Handler):
+class MyBlogMainPage(Handler):
 
     def get(self):
         articles = db.GqlQuery("Select * from Article ORDER BY index DESC")
@@ -112,7 +112,7 @@ def valid_password(password):
 def valid_email(email):
     return EMAIL_RE.match(email)
 
-class SignUpHandler(Handler):
+class SignUpPage(Handler):
 
     def valid_input(self, username, password, verify, email):
         valid = True
@@ -178,7 +178,7 @@ class SignUpHandler(Handler):
             self.render('signup.html', **self.param)
 
 
-class WelcomeHandler(Handler):
+class WelcomePage(Handler):
 
     def get(self):
         self.param = {}
