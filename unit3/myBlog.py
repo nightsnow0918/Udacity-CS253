@@ -96,6 +96,8 @@ USER_RE     = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 PASSWD_RE   = re.compile("^.{3,20}$")
 EMAIL_RE    = re.compile("^[\S]+@[\S]+\.[\S]+$")
 
+SECRET = "6xhgj$ad3.@qozalb&jd!7iso0126udvn3m#f"
+
 class UserProfile(db.Model):
     name    = db.StringProperty(required=True)
     password= db.StringProperty()
@@ -158,13 +160,16 @@ class SignUpHandler(Handler):
         self.param = dict(username=username, email=email)
 
         if self.valid_input(username, password, verify, email):
+            # Generate hash strings
+            hash_pw     = webhash.gen_hash_pw(password, SECRET)
+            hash_cookie = webhash.gen_hash_cookie(username, hash_pw, salt='')
+
             # Store username/password into database
-            hash_pw = webhash.gen_pw_hash(username, password, salt='')
-            new_user = UserProfile(name=username, password=password)
+            new_user = UserProfile(name=username, password=hash_pw)
             new_user.put()
 
             # Set Cookie
-            self.response.set_cookie('name', value=hash_pw, path='/')
+            self.response.set_cookie('name', value=hash_cookie, path='/')
             
             # Redirect to welcome page
             time.sleep(1)
@@ -182,7 +187,7 @@ class WelcomeHandler(Handler):
         user_list = UserProfile.all()
 
         for user in user_list:
-            if webhash.valid_pw(user.name, user.password, hash_str):
+            if webhash.valid_cookie(user.name, user.password, hash_str):
                 self.param['username'] = user.name
                 self.render('welcome.html', **self.param)
                 break
