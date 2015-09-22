@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block body %}
+<form action="/unit3/myblog/login" method="post">
+    <h1>Log-in</h1>
+    <table>
+    <tr>
+        <td>
+            <label>User Name</label>
+        </td>
+        <td>
+            <input type="text" name="username" value="{{username}}">
+        </td>
+        <td>
+            <div class="form-error">{{err_username}}</div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Password</label>
+        </td>
+        <td>
+            <input type="text" name="password" value="{{password}}">
+        </td>
+        <td>
+            <div class="form-error">{{err_password}}</div>
+        </td>
+    </tr>
+    </table>
+    <input type='submit' value='Submit'>
+</form>
+{% endblock %}

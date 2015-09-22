@@ -33,6 +33,8 @@ app = webapp2.WSGIApplication([
     ('/unit2/hw2/welcome', hw2.HelloHandler),
     ('/unit3/myblog', myBlog.MyBlogMainPage),
     ('/unit3/myblog/signup', myBlog.SignUpPage),
+    ('/unit3/myblog/login', myBlog.LoginPage),
+    ('/unit3/myblog/logout', myBlog.Logout),
     ('/unit3/myblog/welcome', myBlog.WelcomePage),
     ('/unit3/myblog/newpost', myBlog.NewPostPage),
     ('/unit3/myblog/(\d+)', myBlog.Permalinks)

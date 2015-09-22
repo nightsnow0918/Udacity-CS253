@@ -178,6 +178,37 @@ class SignUpPage(Handler):
             self.render('signup.html', **self.param)
 
 
+class LoginPage(Handler):
+
+    def get(self):
+        self.render('login.html')
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        self.param = dict(username=username, password=password)
+
+        user_list = UserProfile.all()
+        for user in user_list:
+            if username==user.name:
+                if webhash.gen_hash_pw(password, SECRET)!=user.password:
+                    self.param['err_password'] = "Invalid Password"
+                    self.render('login.html', **self.param)
+                else:
+                    self.redirect('/unit3/myblog/welcome')
+                break
+        else:
+            self.param['err_username'] = "User does not exist"
+            self.render('login.html', **self.param)
+
+
+class Logout(Handler):
+
+    def get(self):
+        self.response.set_cookie('name', value='', path='/')
+        self.redirect('/unit3/myblog/signup')
+            
+
 class WelcomePage(Handler):
 
     def get(self):
