@@ -29,9 +29,9 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
 
 class Article(db.Model):
-    index   = db.IntegerProperty(required=True)
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now=True)
 
 
 class Handler(webapp2.RequestHandler):
@@ -67,28 +67,35 @@ class NewPostPage(Handler):
                                         err_input="Required subject and contents!")
         else:
             total_articles = db.GqlQuery("Select * from Article").count()
-            new_article = Article(subject=subject, content=content, 
-                                  index=total_articles+1)
+            new_article = Article(subject=subject, content=content)
             new_article.put()
             
-            self.redirect("/unit3/myblog/"+str(total_articles+1))
+            self.redirect("/unit3/myblog/%s" % str(new_article.key().id()) )
 
 
 class Permalinks(Handler):
     
     def get(self, post_id):
-        article = None
-        # data may not have been stored into database, keep querying until get the result
-        while not article: 
-            article = db.GqlQuery("Select * from Article where index="+post_id).get()
+        article = Article.get_by_id(int(post_id))
         self.render("article.html", subject=article.subject, content=article.content)
+
+
+class PermalinksJSON(Handler):
+
+    def get(self, post_id):
+        pljson = ""
+        self.write(pljson)
 
 
 class MyBlogMainPage(Handler):
 
     def get(self):
-        articles = db.GqlQuery("Select * from Article ORDER BY index DESC")
+        articles = db.GqlQuery("Select * from Article ORDER BY created DESC")
         self.render("myBlog.html", articles=articles)
+
+
+class MyBlogMainPageJSON(Handler):
+    pass
 
 
 ################### Sign-Up Handling ####################
