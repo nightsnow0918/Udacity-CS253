@@ -17,6 +17,7 @@
 
 import os
 import re
+import json
 import time
 
 import jinja2, webapp2
@@ -83,8 +84,14 @@ class Permalinks(Handler):
 class PermalinksJSON(Handler):
 
     def get(self, post_id):
-        pljson = ""
-        self.write(pljson)
+        article = Article.get_by_id(int(post_id))
+        pljson = {'content': article.content, 
+                  'subject': article.subject,
+                  'created': str(article.created)
+                 }
+        
+        self.response.headers['Content-Type'] = 'application/json'
+        self.write(json.dumps(pljson, sort_keys=True))
 
 
 class MyBlogMainPage(Handler):
@@ -95,7 +102,15 @@ class MyBlogMainPage(Handler):
 
 
 class MyBlogMainPageJSON(Handler):
-    pass
+
+    def get(self):
+        art_list = []
+        articles = Article.all()
+        for a in articles:
+            d = {'content': a.content, 'subject': a.subject, 'created': str(a.created) }
+            art_list.append(d)
+        self.response.headers['Content-Type'] = 'application/json'
+        self.write(json.dumps(art_list, sort_keys=True))
 
 
 ################### Sign-Up Handling ####################
