@@ -19,10 +19,13 @@ import os
 import re
 import json
 import time
+import logging
 
 import jinja2, webapp2
 
 from lib import webhash
+
+from google.appengine.api import memcache
 from google.appengine.ext import db
 
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
@@ -50,8 +53,6 @@ class Handler(webapp2.RequestHandler):
 
 class NewPostPage(Handler):
 
-    total_articles = 0
-
     def valid_input(self, subject, content):
         return subject and content
 
@@ -67,18 +68,38 @@ class NewPostPage(Handler):
                                         content=content,
                                         err_input="Required subject and contents!")
         else:
-            total_articles = db.GqlQuery("Select * from Article").count()
             new_article = Article(subject=subject, content=content)
             new_article.put()
+
+            articles = db.GqlQuery("Select * from Article ORDER BY created DESC")
+            memcache.set("articles", articles)
+            memcache.set("main_last_qry_time", time.time())
             
             self.redirect("/unit3/myblog/%s" % str(new_article.key().id()) )
 
 
 class Permalinks(Handler):
+
+    def cache_article(self, post_id, article):
+        memcache.set("post_id", post_id)
+        memcache.set("post", article)
+        memcache.set("post_last_qry_time", time.time())
     
     def get(self, post_id):
-        article = Article.get_by_id(int(post_id))
-        self.render("article.html", subject=article.subject, content=article.content)
+
+        queried_time = 0
+        pre_post_id = memcache.get("post_id")
+
+        if pre_post_id and pre_post_id==post_id:
+            article = memcache.get("post")
+            queried_time = time.time() - memcache.get("post_last_qry_time")
+        else:
+            article = Article.get_by_id(int(post_id))
+            self.cache_article(post_id, article)
+
+        self.render("article.html", subject=article.subject, 
+                                    content=article.content,
+                                    queried_time=int(queried_time))
 
 
 class PermalinksJSON(Handler):
@@ -97,8 +118,20 @@ class PermalinksJSON(Handler):
 class MyBlogMainPage(Handler):
 
     def get(self):
-        articles = db.GqlQuery("Select * from Article ORDER BY created DESC")
-        self.render("myBlog.html", articles=articles)
+
+        queried_time = 0
+        articles = memcache.get("articles") 
+
+        if articles is None:
+            logging.error("GQL Querying")
+            articles = db.GqlQuery("Select * from Article ORDER BY created DESC")
+            memcache.set("articles", articles)
+            memcache.set("main_last_qry_time", time.time())
+        else:
+            queried_time = time.time() - memcache.get("main_last_qry_time")
+
+        self.render("myBlog.html", articles=articles,
+                                   queried_time=int(queried_time))
 
 
 class MyBlogMainPageJSON(Handler):
@@ -251,3 +284,8 @@ class WelcomePage(Handler):
         pass
 
 
+class FlushAll(Handler):
+
+    def get(self):
+        memcache.flush_all()
+        self.redirect('/unit3/myblog')

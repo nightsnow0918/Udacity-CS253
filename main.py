@@ -38,6 +38,7 @@ app = webapp2.WSGIApplication([
     ('/unit3/myblog/logout', myBlog.Logout),
     ('/unit3/myblog/welcome', myBlog.WelcomePage),
     ('/unit3/myblog/newpost', myBlog.NewPostPage),
+    ('/unit3/myblog/flush', myBlog.FlushAll),
     ('/unit3/myblog/(\d+)', myBlog.Permalinks),
     ('/unit3/myblog/(\d+).json', myBlog.PermalinksJSON)
 ], debug=True)
