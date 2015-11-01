@@ -28,7 +28,7 @@ from lib import webhash
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
-TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
 
@@ -291,13 +291,3 @@ class FlushAll(Handler):
         self.redirect('/myblog')
 
 
-class WikiPage(Handler):
-    
-    def get(self):
-        pass
-
-
-class EditWikiPage(Handler):
-
-    def get(self):
-        pass

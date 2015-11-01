@@ -18,6 +18,7 @@ import webapp2
 from unit2 import hw1
 from unit2 import hw2
 from unit3 import myBlog
+from final import myWiki
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -33,6 +34,8 @@ app = webapp2.WSGIApplication([
     ('/unit2/hw1', hw1.Hw1MainHandler),
     ('/unit2/hw2', hw2.Hw2MainHandler), 
     ('/unit2/hw2/welcome', hw2.HelloHandler),
+
+    # My Blog
     ('/myblog', myBlog.MyBlogMainPage),
     ('/myblog/.json', myBlog.MyBlogMainPageJSON),
     ('/myblog/signup', myBlog.SignUpPage),
@@ -43,6 +46,11 @@ app = webapp2.WSGIApplication([
     ('/myblog/flush', myBlog.FlushAll),
     ('/myblog/(\d+)', myBlog.Permalinks),
     ('/myblog/(\d+).json', myBlog.PermalinksJSON),
-    ('/myblog/_edit/'+WIKI_PAGE_RE, myBlog.EditWikiPage),
-    ('/myblog/'+WIKI_PAGE_RE, myBlog.WikiPage)
+
+    # My Wiki
+    #('/mywiki/signup', myWiki.SignUpPage),
+    #('/mywiki/login', myWiki.LoginPage),
+    #('/mywiki/logout', myWiki.Logout),
+    ('/mywiki/_edit/'+WIKI_PAGE_RE, myWiki.EditWikiPageHandler),
+    ('/mywiki/'+WIKI_PAGE_RE, myWiki.WikiPageHandler)
 ], debug=True)
