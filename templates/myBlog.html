@@ -6,7 +6,7 @@
 
 {% block body %}
     <h1>Snow's Blog</h1>
-    <a href="/unit3/myblog/newpost">New Post</a>
+    <a href="/myblog/newpost">New Post</a>
     {% for article in articles %}
         <div class="article-subject"><h3>{{article.subject}}</h3></div>
         <pre class="article-content">{{article.content}}</pre>

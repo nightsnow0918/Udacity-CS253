@@ -48,9 +48,10 @@ app = webapp2.WSGIApplication([
     ('/myblog/(\d+).json', myBlog.PermalinksJSON),
 
     # My Wiki
-    #('/mywiki/signup', myWiki.SignUpPage),
-    #('/mywiki/login', myWiki.LoginPage),
-    #('/mywiki/logout', myWiki.Logout),
+    ('/mywiki', myWiki.MainPage),
+    ('/mywiki/signup', myWiki.SignUpPage),
+    ('/mywiki/login', myWiki.LoginPage),
+    ('/mywiki/logout', myWiki.Logout),
     ('/mywiki/_edit/'+WIKI_PAGE_RE, myWiki.EditWikiPageHandler),
     ('/mywiki/'+WIKI_PAGE_RE, myWiki.WikiPageHandler)
 ], debug=True)

@@ -203,8 +203,7 @@ class SignUpPage(Handler):
         return UserProfile.gql("WHERE name=:1", user).get()
 
     def get(self):
-        self.render('signup.html')
-
+        self.render('signup.html', signup_dest='/myblog/signup')
 
     def post(self):
         username   = self.request.get('username')
@@ -212,7 +211,8 @@ class SignUpPage(Handler):
         verify     = self.request.get('verify')
         email      = self.request.get('email')
 
-        self.param = dict(username=username, email=email)
+        self.param = dict(username=username, email=email,
+                          signup_dest='/myblog/signup')
 
         if self.valid_input(username, password, verify, email):
             # Generate hash strings
@@ -236,12 +236,13 @@ class SignUpPage(Handler):
 class LoginPage(Handler):
 
     def get(self):
-        self.render('login.html')
+        self.render('login.html', login_dest='/myblog/login')
 
     def post(self):
         username = self.request.get('username')
         password = self.request.get('password')
-        self.param = dict(username=username, password=password)
+        self.param = dict(username=username, password=password,
+                          login_dest='/myblog/login')
 
         user_list = UserProfile.all()
         for user in user_list:

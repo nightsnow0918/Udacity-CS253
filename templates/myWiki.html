@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Snow's Blog
+{% endblock %}
+
+{% block body %}
+    <div style='float:right'>
+    {% if status=='login' %}
+        <span><a href='/mywiki/edit'>edit</a>|<a href=''>history</a></span>
+        <span>{{username}}|<a href='/mywiki/logout'>logout</a></span>
+    {% elif status=='logout' %}
+        <span><a href=''>history</a></span>
+        <span><a href='/mywiki/login'>login</a>|<a href='/mywiki/signup'>signup</a></span>
+    {% else %}
+        <span><a href='/mywiki/edit'>view</a>|<a href=''>history</a></span>
+        <span>{{username}}|<a href='/mywiki/logout'>logout</a></span>
+    {% endif %}
+    </div>
+    <h1>Welcome to the Final!!</h1>
+    {% for article in articles %}
+        <pre class="article-content">{{article.content}}</pre>
+        <HR align="left" width="30%">
+    {% endfor %}
+{% endblock %}
