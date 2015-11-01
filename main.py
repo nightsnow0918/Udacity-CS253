@@ -26,19 +26,23 @@ class MainHandler(webapp2.RequestHandler):
     def post(self):
         pass
 
+WIKI_PAGE_RE = r'(/(?:[a-zA-Z0-9_-]+/?)*)'
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler), 
     ('/unit2/hw1', hw1.Hw1MainHandler),
     ('/unit2/hw2', hw2.Hw2MainHandler), 
     ('/unit2/hw2/welcome', hw2.HelloHandler),
-    ('/unit3/myblog', myBlog.MyBlogMainPage),
-    ('/unit3/myblog/.json', myBlog.MyBlogMainPageJSON),
-    ('/unit3/myblog/signup', myBlog.SignUpPage),
-    ('/unit3/myblog/login', myBlog.LoginPage),
-    ('/unit3/myblog/logout', myBlog.Logout),
-    ('/unit3/myblog/welcome', myBlog.WelcomePage),
-    ('/unit3/myblog/newpost', myBlog.NewPostPage),
-    ('/unit3/myblog/flush', myBlog.FlushAll),
-    ('/unit3/myblog/(\d+)', myBlog.Permalinks),
-    ('/unit3/myblog/(\d+).json', myBlog.PermalinksJSON)
+    ('/myblog', myBlog.MyBlogMainPage),
+    ('/myblog/.json', myBlog.MyBlogMainPageJSON),
+    ('/myblog/signup', myBlog.SignUpPage),
+    ('/myblog/login', myBlog.LoginPage),
+    ('/myblog/logout', myBlog.Logout),
+    ('/myblog/welcome', myBlog.WelcomePage),
+    ('/myblog/newpost', myBlog.NewPostPage),
+    ('/myblog/flush', myBlog.FlushAll),
+    ('/myblog/(\d+)', myBlog.Permalinks),
+    ('/myblog/(\d+).json', myBlog.PermalinksJSON),
+    ('/myblog/_edit/'+WIKI_PAGE_RE, myBlog.EditWikiPage),
+    ('/myblog/'+WIKI_PAGE_RE, myBlog.WikiPage)
 ], debug=True)

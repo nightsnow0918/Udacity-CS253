@@ -75,7 +75,7 @@ class NewPostPage(Handler):
             memcache.set("articles", articles)
             memcache.set("main_last_qry_time", time.time())
             
-            self.redirect("/unit3/myblog/%s" % str(new_article.key().id()) )
+            self.redirect("/myblog/%s" % str(new_article.key().id()) )
 
 
 class Permalinks(Handler):
@@ -228,7 +228,7 @@ class SignUpPage(Handler):
             
             # Redirect to welcome page
             time.sleep(1)
-            self.redirect('/unit3/myblog/welcome')
+            self.redirect('/myblog/welcome')
         else:
             self.render('signup.html', **self.param)
 
@@ -250,7 +250,7 @@ class LoginPage(Handler):
                     self.param['err_password'] = "Invalid Password"
                     self.render('login.html', **self.param)
                 else:
-                    self.redirect('/unit3/myblog/welcome')
+                    self.redirect('/myblog/welcome')
                 break
         else:
             self.param['err_username'] = "User does not exist"
@@ -261,7 +261,7 @@ class Logout(Handler):
 
     def get(self):
         self.response.set_cookie('name', value='', path='/')
-        self.redirect('/unit3/myblog/signup')
+        self.redirect('/myblog/signup')
             
 
 class WelcomePage(Handler):
@@ -278,7 +278,7 @@ class WelcomePage(Handler):
                 self.render('welcome.html', **self.param)
                 break
         else:
-            self.redirect('/unit3/myblog/signup')
+            self.redirect('/myblog/signup')
 
     def post(self):
         pass
@@ -288,4 +288,16 @@ class FlushAll(Handler):
 
     def get(self):
         memcache.flush_all()
-        self.redirect('/unit3/myblog')
+        self.redirect('/myblog')
+
+
+class WikiPage(Handler):
+    
+    def get(self):
+        pass
+
+
+class EditWikiPage(Handler):
+
+    def get(self):
+        pass
